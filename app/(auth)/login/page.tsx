@@ -2,23 +2,29 @@
 import { Button, Input } from "@nextui-org/react";
 import Link from "next/link";
 import { API_URL } from "@/constants";
-import { data } from "framer-motion/client";
 import axios from "axios";
 
 export default function LoginPage() {
-  const handleEvent = async (e: React.FormEvent) => {
+  const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     const authData = {
       userEmail: formData.get("userEmail"),
       userPassword: formData.get("userPassword"),
     }
 
-    console.log(authData);
-    
-    const { data } = await axios.post(`${API_URL}/auth/login`, authData);
-    console.log(data);
-    return;
+    try {
+      const { data: responseData } = await axios.post(`${API_URL}/auth/login`, authData, {
+        withCredentials: true
+      });
+      console.log(responseData);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Login request failed", error.response?.status, error.response?.data ?? error.message);
+      } else {
+        console.error("Login request failed", error);
+      }
+    }
   }
   return (
     <form className="bg-orange-500 px-10 py-2 rounded-md" onSubmit={handleEvent}>
