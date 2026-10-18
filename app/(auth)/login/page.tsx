@@ -4,9 +4,17 @@ import Link from "next/link";
 import { API_URL } from "@/constants";
 import axios from "axios";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function LoginPage() {
+  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
+
   const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitting(true);
+
     const formData = new FormData(e.currentTarget);
     const authData = {
       userEmail: formData.get("userEmail"),
@@ -17,13 +25,19 @@ export default function LoginPage() {
       const { data: responseData } = await axios.post(`${API_URL}/auth/login`, authData, {
         withCredentials: true
       });
+
       console.log(responseData);
+      
+      router.push("/dashboard");
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Login request failed", error.response?.status, error.response?.data ?? error.message);
       } else {
         console.error("Login request failed", error);
       }
+    } finally {
+      setSubmitting(false);
     }
   }
   return (
@@ -51,7 +65,7 @@ export default function LoginPage() {
       </div>
 
       <div className="flex flex-col items-center gap-2">
-        <Button color="primary" type="submit">Iniciar sesion</Button>
+        <Button color="primary" type="submit" disabled={submitting}> {submitting ? "Enviando..." : "Iniciar sesion"}</Button>
 
         <p>
           ¿No tienes cuenta?{" "}
