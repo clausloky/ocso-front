@@ -6,6 +6,10 @@ import { API_URL, TOKEN_NAME } from "@/constants";
 
 import SelectLocation from "./_components/SelectLocation";
 
+import LocationCard from "./_components/LocationCard";
+
+import FormNewLocation from "./_components/FormNewLocation";
+
 interface CountPageProps {
   searchParams: {
     store?: string;
@@ -45,6 +49,15 @@ const CountPage = async ({searchParams} : CountPageProps) => {
       <div className="w-full flex flex-col items-center h-[90vh] bg-red-50">
         <div className="w-1/2 my-10">
           <SelectLocation locations={data} store={searchParams.store} />
+        </div>
+        <div className="w-8/12">
+          <LocationCard store={searchParams.store}/>
+        </div>
+        <div className="w-61/2">
+          <FormNewLocation/>
+        </div>
+        <div>
+          <DeleteLocationButton store={searchParams.store} />
         </div>
       </div>
     </div>
