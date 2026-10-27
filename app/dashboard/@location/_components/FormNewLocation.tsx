@@ -8,7 +8,13 @@ import { createLocation } from "@/actions/locations/create";
 
 import SelectManager from "./SelectManager";
 
-export default async function FormNewLocation() {
+export default async function FormNewLocation({
+  searchParams,
+}: {
+  searchParams?: string;
+}) {
+  if (searchParams) return null;
+
   const cookieStore = await cookies();
   const token = cookieStore.get(TOKEN_NAME)?.value;
 
@@ -26,7 +32,10 @@ export default async function FormNewLocation() {
   ]);
 
   return (
-    <form action={createLocation} className="flex flex-col gap-4">
+    <form
+      action={createLocation}
+      className="bg-orange-400 py-2 px-4 flex flex-col gap-6 w-full rounded-lg"
+    >
       <h1 className="text-3xl text-white text-center">
         Crear Tienda
       </h1>
@@ -40,14 +49,14 @@ export default async function FormNewLocation() {
 
       <Input
         label="Dirección"
-        placeholder="Av. de la Luz S/N"
+        placeholder="Av De La Luz S/N"
         name="locationAddress"
         isRequired
       />
 
       <Input
         label="Latitud"
-        placeholder="20"
+        placeholder="-120"
         name="locationLat"
         type="number"
         step="any"
@@ -56,7 +65,7 @@ export default async function FormNewLocation() {
 
       <Input
         label="Longitud"
-        placeholder="-100"
+        placeholder="20"
         name="locationLng"
         type="number"
         step="any"
@@ -73,5 +82,4 @@ export default async function FormNewLocation() {
       </Button>
     </form>
   );
-
 }

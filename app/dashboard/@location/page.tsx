@@ -1,14 +1,16 @@
 import axios from "axios";
-import { cookies } from "next/headers";
 
 import { Location } from "@/entities";
-import { API_URL, TOKEN_NAME } from "@/constants";
+import { API_URL } from "@/constants";
 
 import SelectLocation from "./_components/SelectLocation";
 
 import LocationCard from "./_components/LocationCard";
 
 import FormNewLocation from "./_components/FormNewLocation";
+
+import DeleteLocationButton from "./_components/DeleteLocationButton";
+import { AuthHeaders } from "@/helpers/authHeaders";
 
 interface CountPageProps {
   searchParams: {
@@ -17,19 +19,13 @@ interface CountPageProps {
 }
 
 const CountPage = async ({searchParams} : CountPageProps) => {
-  const userCookies = cookies();
-
-  const token = userCookies.get(TOKEN_NAME)?.value;
-  if (!token) {
-    throw new Error(`No se encontró la cookie de autenticación "${TOKEN_NAME}".`);
-  }
 
   let { data } = await axios.get<Location[]>(
     `${API_URL}/locations`,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        ...AuthHeaders()
+      }
     }
   );
 
@@ -50,10 +46,10 @@ const CountPage = async ({searchParams} : CountPageProps) => {
         <div className="w-1/2 my-10">
           <SelectLocation locations={data} store={searchParams.store} />
         </div>
-        <div className="w-8/12">
+        <div className="w-8/12 my-10">
           <LocationCard store={searchParams.store}/>
         </div>
-        <div className="w-61/2">
+        <div className="w-6/12 my-10">
           <FormNewLocation/>
         </div>
         <div>

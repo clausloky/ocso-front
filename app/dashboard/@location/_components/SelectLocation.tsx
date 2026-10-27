@@ -14,7 +14,7 @@ export default function SelectLocation({ locations, store }: {locations: Locatio
     }}
     onChange={((e) => {
       console.log(e.target.value);
-      router.push(`/dashboard?store=${e.target.value ? e.target.value : "0"}`)
+      router.push(`/dashboard${e.target.value ? `?store=${e.target.value}` : ""}`)
     })}
     selectedKeys={store}
     >
