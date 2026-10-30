@@ -3,7 +3,7 @@ import { Button, Input } from "@nextui-org/react";
 
 import { Manager, Location } from "@/entities";
 import { API_URL, TOKEN_NAME } from "@/constants";
-import { createLocation } from "@/actions/locations/create";
+import { updateLocation } from "@/actions/locations/update";
 
 import SelectManager from "./SelectManager";
 
@@ -12,8 +12,7 @@ export default async function FormUpdateLocation({
 }: {
   store: string | undefined;
 }) {
-
-  if (!store || store === undefined) return null;
+  if (!store) return null;
 
   const storeId = Number(store);
 
@@ -76,9 +75,13 @@ export default async function FormUpdateLocation({
       manager.managerId === foundLocation.manager?.managerId
   );
 
+  // Vinculamos el ID para que la acción reciba primero store
+  // y después FormData.
+  const updateLocationWithStore = updateLocation.bind(null, store);
+
   return (
     <form
-      action={createLocation}
+      action={updateLocationWithStore}
       className="bg-orange-400 py-2 px-4 flex flex-col gap-6 w-full rounded-lg"
     >
       <h1 className="text-3xl text-white text-center">

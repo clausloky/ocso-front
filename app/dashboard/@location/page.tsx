@@ -61,11 +61,9 @@ const CountPage = async ({ searchParams }: CountPageProps) => {
           <FormNewLocation />
         </div>
 
-        <div>
+        <div className="flex flex-row flex-grow-0 items-center gap-10">
           <DeleteLocationButton store={searchParams.store} />
-        </div>
 
-        <div>
           <UpdateLocation>
             <FormUpdateLocation store={searchParams.store}></FormUpdateLocation>
           </UpdateLocation>

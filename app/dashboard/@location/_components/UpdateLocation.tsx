@@ -10,6 +10,8 @@ import {
 } from '@nextui-org/react';
 import { ReactNode } from 'react';
 
+import { LuPencil } from 'react-icons/lu';
+
 interface UpdateLocationProps {
   children: ReactNode;
 }
@@ -21,9 +23,9 @@ export default function UpdateLocation({
 
   return (
     <>
-      <Button onPress={onOpen}>Editar ubicacion</Button>
+      <Button onPress={onOpen}><LuPencil color='primary'></LuPencil></Button>
 
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className='bg-orange-400'>
         <ModalContent>
           {() => (
             <>

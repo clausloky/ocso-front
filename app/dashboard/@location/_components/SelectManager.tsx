@@ -16,7 +16,13 @@ export default function SelectManager({
   defaultManager,
 }: SelectManagerProps) {
   const disabledKeys = locations
-    .map((location) => location.manager?.managerId?.toString())
+    .map((location) => {
+      const managerId = location.manager?.managerId?.toString();
+
+      if (managerId === defaultManager) return undefined;
+
+      return managerId;
+    })
     .filter(
       (managerId): managerId is string => managerId !== undefined
     );
