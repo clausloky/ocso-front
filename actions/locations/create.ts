@@ -1,17 +1,14 @@
 "use server";
 
-import axios from "axios";
-import { cookies } from "next/headers";
+import { API_URL } from "@/constants";
+import { AuthHeaders } from "@/helpers/AuthHeaders";
+import { revalidateTag } from "next/cache";
 
-import { API_URL, TOKEN_NAME } from "@/constants";
+import { Location } from "@/entities";
+
+import { redirect } from "next/navigation";
 
 export async function createLocation(formData: FormData) {
-  const token = (await cookies()).get(TOKEN_NAME)?.value;
-
-  if (!token) {
-    throw new Error("No se encontró el token.");
-  }
-
   const location: any = {};
   const locationLatLng = [0, 0];
 
@@ -32,30 +29,33 @@ export async function createLocation(formData: FormData) {
   location.locationLatLng = locationLatLng;
 
   try {
-    const res = await axios.post(
-      `${API_URL}/locations`,
-      {
-        ...location,
+    const res = await fetch(`${API_URL}/locations`, {
+      method: "POST",
+      body: JSON.stringify(location),
+      headers: {
+        "Content-Type": "application/json",
+        ...(await AuthHeaders()),
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    });
 
-    console.log(res.data);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error al crear la ubicación:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    } else {
-      console.error("Error inesperado al crear la ubicación:", error);
+    if (!res.ok) {
+      const errorData = await res.text();
+      throw new Error(
+        `Error al crear la ubicación (${res.status}): ${errorData}`
+      );
     }
 
+    const data : Location = await res.json();
+
+    if (res.status === 201) {
+      revalidateTag("dashboard:location");
+      redirect(`/dashboard?store=${data.locationId}`);
+    }
+
+    console.log(data);
+    
+  } catch (error) {
+    console.error("Error al crear la ubicación:", error);
     throw error;
   }
 }

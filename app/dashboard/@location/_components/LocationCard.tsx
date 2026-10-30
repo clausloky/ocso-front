@@ -1,8 +1,6 @@
-import axios from "axios";
-import { cookies } from "next/headers";
-
 import { Location } from "@/entities";
-import { API_URL, TOKEN_NAME } from "@/constants";
+import { API_URL } from "@/constants";
+import { AuthHeaders } from "@/helpers/AuthHeaders";
 
 import { Card, CardHeader, CardBody, Divider } from "@nextui-org/react";
 
@@ -15,22 +13,25 @@ export default async function LocationCard({
 }: LocationCardProps) {
   if (!store || store === "0") return null;
 
-  const token = cookies().get(TOKEN_NAME)?.value;
+  const response = await fetch(`${API_URL}/locations/${store}`, {
+    headers: {
+      ...(await AuthHeaders()),
+    },
+    next: {
+      tags: [
+        "dashboard:locations",
+        `dashboard:locations:${store}`,
+      ],
+    },
+  });
 
-  if (!token) {
+  if (!response.ok) {
     throw new Error(
-      `No se encontró la cookie de autenticación "${TOKEN_NAME}".`
+      `Error al obtener la ubicación: ${response.status}`
     );
   }
 
-  const { data } = await axios.get<Location>(
-    `${API_URL}/locations/${store}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const data: Location = await response.json();
 
   return (
     <Card>
@@ -42,19 +43,23 @@ export default async function LocationCard({
 
       <CardBody>
         <p className="w-full">
-          Manager: <b>{data.manager?.managerFullName ?? "Sin asignar"}</b>
+          Manager:{" "}
+          <b>{data.manager?.managerFullName ?? "Sin asignar"}</b>
         </p>
 
         <p className="w-full">
-          Email: <b>{data.manager?.managerEmail ?? "N/A"}</b>
+          Email:{" "}
+          <b>{data.manager?.managerEmail ?? "N/A"}</b>
         </p>
 
         <p className="w-full">
-          Teléfono: <b>{data.manager?.managerPhoneNumber ?? "N/A"}</b>
+          Teléfono:{" "}
+          <b>{data.manager?.managerPhoneNumber ?? "N/A"}</b>
         </p>
 
         <p className="w-full">
-          Salario: <b>${data.manager?.managerSalary ?? 0}</b>
+          Salario:{" "}
+          <b>${data.manager?.managerSalary ?? 0}</b>
         </p>
       </CardBody>
     </Card>

@@ -7,15 +7,19 @@ import { Location, Manager } from "@/entities";
 interface SelectManagerProps {
   managers: Manager[];
   locations: Location[];
+  defaultManager?: string;
 }
 
 export default function SelectManager({
   managers,
   locations,
+  defaultManager,
 }: SelectManagerProps) {
   const disabledKeys = locations
     .map((location) => location.manager?.managerId?.toString())
-    .filter((managerId): managerId is string => managerId !== undefined);
+    .filter(
+      (managerId): managerId is string => managerId !== undefined
+    );
 
   return (
     <Select
@@ -23,6 +27,9 @@ export default function SelectManager({
       label="Manager"
       placeholder="Selecciona un manager"
       disabledKeys={disabledKeys}
+      defaultSelectedKeys={
+        defaultManager ? [defaultManager] : []
+      }
     >
       {managers.map((manager) => (
         <SelectItem

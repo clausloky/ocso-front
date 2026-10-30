@@ -1,8 +1,9 @@
 "use server";
 
-import { API_URL, TOKEN_NAME } from "@/constants";
-import axios from "axios";
-import { cookies } from "next/headers";
+import { API_URL } from "@/constants";
+import { AuthHeaders } from "@/helpers/AuthHeaders";
+
+import { redirect } from "next/navigation";
 
 export default async function deleteLocation(formData: FormData) {
   const locationId = formData.get("store");
@@ -11,31 +12,30 @@ export default async function deleteLocation(formData: FormData) {
     throw new Error("No se encontró el ID de la ubicación.");
   }
 
-  const token = (await cookies()).get(TOKEN_NAME)?.value;
-
-  if (!token) {
-    throw new Error("No se encontró el token.");
-  }
-
   try {
-    const res = await axios.delete(`${API_URL}/locations/${locationId}`, {
-      headers: {
-      Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(
+      `${API_URL}/locations/${encodeURIComponent(locationId)}`,
+      {
+        method: "DELETE",
+        headers: {
+          ...(await AuthHeaders()),
+        },
+      }
+    );
 
-    console.log(res.data);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error al eliminar la ubicación:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
+    if (!res.ok) {
+      const errorData = await res.text();
+      throw new Error(
+        `Error al eliminar la ubicación (${res.status}): ${errorData}`
+      );
     } else {
-      console.error("Error inesperado al eliminar la ubicación:", error);
+      redirect(`/dashboard`);
     }
 
+    return;
+
+  } catch (error) {
+    console.error("Error al eliminar la ubicación:", error);
     throw error;
   }
 }

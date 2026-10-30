@@ -1,4 +1,3 @@
-import axios from "axios";
 import { cookies } from "next/headers";
 import { Button, Input } from "@nextui-org/react";
 
@@ -27,9 +26,35 @@ export default async function FormNewLocation({
   };
 
   const [managersResponse, locationsResponse] = await Promise.all([
-    axios.get<Manager[]>(`${API_URL}/managers`, { headers }),
-    axios.get<Location[]>(`${API_URL}/locations`, { headers }),
+    fetch(`${API_URL}/managers`, {
+      headers,
+      next: {
+        tags: ["dashboard:managers"],
+      },
+    }),
+
+    fetch(`${API_URL}/locations`, {
+      headers,
+      next: {
+        tags: ["dashboard:locations"],
+      },
+    }),
   ]);
+
+  if (!managersResponse.ok) {
+    throw new Error(
+      `Error al obtener los encargados: ${managersResponse.status}`
+    );
+  }
+
+  if (!locationsResponse.ok) {
+    throw new Error(
+      `Error al obtener las tiendas: ${locationsResponse.status}`
+    );
+  }
+
+  const managers: Manager[] = await managersResponse.json();
+  const locations: Location[] = await locationsResponse.json();
 
   return (
     <form
@@ -50,7 +75,7 @@ export default async function FormNewLocation({
       <Input
         label="Dirección"
         placeholder="Av De La Luz S/N"
-        name="locationAddress"
+        name="locationAdress"
         isRequired
       />
 
@@ -73,8 +98,8 @@ export default async function FormNewLocation({
       />
 
       <SelectManager
-        managers={managersResponse.data}
-        locations={locationsResponse.data}
+        managers={managers}
+        locations={locations}
       />
 
       <Button type="submit" color="primary">
