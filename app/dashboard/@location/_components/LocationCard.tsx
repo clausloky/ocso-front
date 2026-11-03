@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Location } from "@/entities";
 import { API_URL } from "@/constants";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
@@ -44,22 +45,27 @@ export default async function LocationCard({
       <CardBody>
         <p className="w-full">
           Manager:{" "}
-          <b>{data.manager?.managerFullName ?? "Sin asignar"}</b>
+          {data.manager ? (
+            <Link
+              href={`/dashboard/managers/${data.manager.managerId}`}
+            >
+              <b>{data.manager.managerFullName}</b>
+            </Link>
+          ) : (
+            <b>Sin asignar</b>
+          )}
         </p>
 
         <p className="w-full">
-          Email:{" "}
-          <b>{data.manager?.managerEmail ?? "N/A"}</b>
+          Email: <b>{data.manager?.managerEmail ?? "N/A"}</b>
         </p>
 
         <p className="w-full">
-          Teléfono:{" "}
-          <b>{data.manager?.managerPhoneNumber ?? "N/A"}</b>
+          Teléfono: <b>{data.manager?.managerPhoneNumber ?? "N/A"}</b>
         </p>
 
         <p className="w-full">
-          Salario:{" "}
-          <b>${data.manager?.managerSalary ?? 0}</b>
+          Salario: <b>${data.manager?.managerSalary ?? 0}</b>
         </p>
       </CardBody>
     </Card>
