@@ -1,6 +1,8 @@
 import { API_URL } from "@/constants";
 import { Manager } from "@/entities";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
+import DeleteManagerButton from "../_components/DeleteManagerButton";
+
 import {
   Card,
   CardBody,
@@ -20,9 +22,13 @@ export default async function ManagerPage({
     {
       headers: {
         ...(await AuthHeaders()),
-      }, next: {
-        tags: [`dashboard:managers:${params.id}`, 'dashboard:managers']
-      }
+      },
+      next: {
+        tags: [
+          `dashboard:managers:${params.id}`,
+          "dashboard:managers",
+        ],
+      },
     }
   );
 
@@ -35,41 +41,47 @@ export default async function ManagerPage({
   const data: Manager = await response.json();
 
   return (
-    <Card className="mx-10 my-10">
-    <CardHeader>
-        <p className="w-full">
-        Nombre: <b>{data.managerFullName}</b>
-        </p>
-    </CardHeader>
+    <div className="flex flex-col gap-10 flex-grow-0 items-center justify-center">
+      <Card className="mx-10 my-10">
+        <CardHeader>
+          <p className="w-full">
+            Nombre: <b>{data.managerFullName}</b>
+          </p>
+        </CardHeader>
 
-    <Divider />
+        <Divider />
 
-    <CardBody>
-        <p className="w-full">
-        Email: <b>{data.managerEmail}</b>
-        </p>
+        <CardBody>
+          <p className="w-full">
+            Email: <b>{data.managerEmail}</b>
+          </p>
 
-        <p className="w-full">
-        Teléfono: <b>{data.managerPhoneNumber}</b>
-        </p>
+          <p className="w-full">
+            Teléfono: <b>{data.managerPhoneNumber}</b>
+          </p>
 
-        {data.location ? (
-        <>
-            <p>
-            Tienda: <b>{data.location.locationName}</b>
-            </p>
+          {data.location ? (
+            <>
+              <p>
+                Tienda: <b>{data.location.locationName}</b>
+              </p>
 
-            <iframe
-            className="border-2 border-orange-800 rounded-md my-2"
-            width="300"
-            height="200"
-            src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAz0Y6dhhUVleZmt7-H4PO1QQWCSEz3LBg&q=${data.location.locationLatLng[0]},${data.location.locationLatLng[1]}`}
-            ></iframe>
-        </>
-        ) : (
-        <p>No tiene tienda</p>
-        )}
-    </CardBody>
-    </Card>
+              <iframe
+                className="border-2 border-orange-800 rounded-md my-2"
+                width="300"
+                height="200"
+                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAz0Y6dhhUVleZmt7-H4PO1QQWCSEz3LBg&q=${data.location.locationLatLng[0]},${data.location.locationLatLng[1]}`}
+              />
+            </>
+          ) : (
+            <p>No tiene tienda</p>
+          )}
+        </CardBody>
+      </Card>
+
+      <div className="bg-white shadow rounded-md px-10 py-2">
+        <DeleteManagerButton managerId={data.managerId} />
+      </div>
+    </div>
   );
 }

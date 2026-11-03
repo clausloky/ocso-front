@@ -3,8 +3,10 @@ import ManagerCard from "./_components/ManagerCard";
 
 export default function LayoutManagers({
   children,
+  count,
 }: {
   children: ReactNode;
+  count: ReactNode;
 }) {
   return (
     <>
@@ -12,7 +14,10 @@ export default function LayoutManagers({
         <ManagerCard />
       </div>
 
-      <div>{children}</div>
+      <div className="w-7/12 flex flex-col justify-center items-center gap-10">
+        <div>{children}</div>
+        <div>{count}</div>
+      </div>
     </>
   );
 }
