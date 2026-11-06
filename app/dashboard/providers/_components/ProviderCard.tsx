@@ -1,21 +1,28 @@
 import { Provider } from "@/entities";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 
-export default function ProviderCard({ provider }: { provider: Provider }) {
+export default function ProviderCard({
+  provider,
+}: {
+  provider: Provider;
+}) {
   return (
-    <Card>
+    <Card className="w-full min-w-[350px]">
       <CardHeader>{provider.providerName}</CardHeader>
+
       <Divider />
+
       <CardBody>
         <p>Correo electrónico:</p>
         <b>{provider.providerEmail}</b>
 
-        <p>Numero de teléfono:</p>
+        <p>Número de teléfono:</p>
         <b>{provider.providerPhoneNumber}</b>
 
-        {provider.products ? (
+        {provider?.products?.length !== 0 ? (
           <p>
-            Tiene <b>{provider.products.length}</b> productos
+            Tiene <b>{provider?.products?.length}</b> producto
+            {provider.products.length > 1 ? "s" : ""}
           </p>
         ) : (
           <p>No tiene productos</p>
