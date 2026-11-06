@@ -1,8 +1,10 @@
 import { API_URL } from "@/constants";
-import { Provider } from "@/entities";
+import { Provider, Product } from "@/entities";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
 import Link from "next/link";
+
 import ProviderCard from "../_components/ProviderCard";
+import FormUpdateProvider from "./_components/FormUpdateProviders";
 import ProductCard from "./_components/ProductCard";
 
 export default async function ProviderPage({
@@ -22,19 +24,24 @@ export default async function ProviderPage({
   });
 
   if (!response.ok) {
-    throw new Error(`Error al obtener el proveedor: ${response.status}`);
+    throw new Error(
+      `Error al obtener el proveedor: ${response.status}`
+    );
   }
 
   const provider: Provider = await response.json();
 
   return (
     <div className="flex flex-grow-0 flex-col pl-10 gap-10 h-[90vh] pt-10">
-      <ProviderCard provider={provider} />
+      <div className="flex flex-row">
+        <ProviderCard provider={provider} />
+        <FormUpdateProvider provider={provider} />
+      </div>
 
-      <div className="h-1 bg-orange-900 w-[80vw]" />
+      <div className="h-1 bg-orange-900 w-[85vw]" />
 
       <div className="flex flex-wrap gap-10">
-        {provider.products.map((product) => (
+        {provider.products.map((product: Product) => (
           <Link
             href={{
               pathname: `/dashboard/products/${product.productId}`,
