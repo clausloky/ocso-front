@@ -2,33 +2,34 @@
 
 import ProductCard from "../../providers/[id]/_components/ProductCard";
 import { Product } from "@/entities";
-import { Input } from "@nextui-org/react";
+import { Input, Select, SelectItem } from "@nextui-org/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Provider } from "@/entities";
 
 export default function FilteredCards({
-  products,
+  products, providers,
 }: {
   products: Product[];
+  providers: Provider[]
 }) {
   const [filtered, setFiltered] = useState<string>("");
   const [productsList, setProductsList] = useState<Product[]>(products);
+  const [provider, setProvider] = useState<string>("");
 
   useEffect(() => {
     const filteredProducts = products.filter((product) => {
-      if (
+      console.log(product);
+      return (
         product.productName
           .toLowerCase()
-          .includes(filtered.toLowerCase())
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+          .includes(filtered.toLowerCase()) &&
+        (!provider || String(product?.provider?.providerId) === provider)
+      );
     });
 
     setProductsList(filteredProducts);
-  }, [filtered]);
+  }, [filtered, provider, products]);
 
   return (
     <div className="max-h-[90vh] min-h-[90vh] overflow-y-auto flex flex-col gap-8 border-r-orange-400 border-r-2 px-10 pt-10">
@@ -38,6 +39,20 @@ export default function FilteredCards({
         }}
         label="Nombre del producto"
       />
+
+      <Select
+        label="Proveedor"
+        onChange={(e) => setProvider(e.target.value)}
+      >
+        {providers.map((provider) => (
+          <SelectItem
+            key={provider.providerId}
+            value={provider.providerId}
+          >
+            {provider.providerName}
+          </SelectItem>
+        ))}
+      </Select>
 
       {productsList.map((product) => {
         return (
