@@ -17,8 +17,13 @@ export default async function EmployeePage({
       headers: {
         ...AuthHeaders(),
       },
+      cache: "no-store",
     }
   );
+
+  if (!responseEmployee.ok) {
+    throw new Error(`Error al obtener el empleado: ${responseEmployee.status}`);
+  }
 
   const employee: Employee = await responseEmployee.json();
 

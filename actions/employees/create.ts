@@ -4,58 +4,24 @@ import { API_URL } from "@/constants";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
 import { revalidateTag } from "next/cache";
 
-import { Location } from "@/entities";
+export default async function createEmployee(formData: FormData) {
+  const filteredFormData = new FormData();
 
-import { redirect } from "next/navigation";
-
-export async function createLocation(formData: FormData) {
-  const location: any = {};
-  const locationLatLng = [0, 0];
-
-  for (const key of formData.keys()) {
-    const value = formData.get(key);
-
-    if (value) {
-      if (key === "locationLat") {
-        locationLatLng[0] = +value;
-      } else if (key === "locationLng") {
-        locationLatLng[1] = +value;
-      } else {
-        location[key] = value;
-      }
+  formData.forEach((value, key) => {
+    if (!key.startsWith("$ACTION")) {
+      filteredFormData.append(key, value);
     }
-  }
+  });
 
-  location.locationLatLng = locationLatLng;
+  const response = await fetch(`${API_URL}/employees`, {
+    method: "POST",
+    headers: {
+      ...AuthHeaders(),
+    },
+    body: filteredFormData,
+  });
 
-  try {
-    const res = await fetch(`${API_URL}/locations`, {
-      method: "POST",
-      body: JSON.stringify(location),
-      headers: {
-        "Content-Type": "application/json",
-        ...(await AuthHeaders()),
-      },
-    });
+  console.log(await response.json());
 
-    if (!res.ok) {
-      const errorData = await res.text();
-      throw new Error(
-        `Error al crear la ubicación (${res.status}): ${errorData}`
-      );
-    }
-
-    const data : Location = await res.json();
-
-    if (res.status === 201) {
-      revalidateTag("dashboard:location");
-      redirect(`/dashboard?store=${data.locationId}`);
-    }
-
-    console.log(data);
-    
-  } catch (error) {
-    console.error("Error al crear la ubicación:", error);
-    throw error;
-  }
+  revalidateTag("dashboard:employees");
 }

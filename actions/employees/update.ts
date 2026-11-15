@@ -2,7 +2,7 @@
 
 import { API_URL } from "@/constants";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export default async function updateEmployee(
   employeeId: string,
@@ -11,12 +11,16 @@ export default async function updateEmployee(
   const filteredFormData = new FormData();
 
   formData.forEach((value, key) => {
-    if (!key.startsWith("$ACTION")) {
-      filteredFormData.append(key, value);
+    if (key.startsWith("$ACTION")) {
+      return;
     }
-  });
 
-  console.log(employeeId);
+    if (typeof value !== "string" && value.size === 0) {
+      return;
+    }
+
+    filteredFormData.append(key, value);
+  });
 
   const response = await fetch(
     `${API_URL}/employees/${employeeId}`,
@@ -29,7 +33,9 @@ export default async function updateEmployee(
     }
   );
 
-  if (response.status === 200) revalidateTag("dashboard:employees");
+  
+  console.log(response.json());
 
-  console.log(await response.json());
+  revalidateTag("dashboard:employees");
+  revalidatePath(`/dashboard/employees/${employeeId}`);
 }

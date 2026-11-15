@@ -1,14 +1,35 @@
 import updateEmployee from "@/actions/employees/update";
+import SelectLocations from "../../_components/SelectLocation";
 import { Employee } from "@/entities";
+import { API_URL } from "@/constants";
+import { AuthHeaders } from "@/helpers/AuthHeaders";
 import { Button, Input } from "@nextui-org/react";
 
-export default function FormUpdateEmployee(
-  { employee }: { employee: Employee }
-) {
-  const employeeId = employee.employeeId;
+export default async function FormUpdateEmployee({
+  employee,
+}: {
+  employee: Employee;
+}) {
+  const { employeeId } = employee;
+
   const updateEmployeeById = updateEmployee.bind(null, employeeId);
+
+  const responseLocations = await fetch(
+    `${API_URL}/locations`,
+    {
+      headers: {
+        ...AuthHeaders(),
+      },
+    }
+  );
+
+  const locations = await responseLocations.json();
+
   return (
-    <form action={updateEmployeeById} className="flex flex-col gap-2 p-8 rounded-md m-2 bg-orange-600 h-fit">
+    <form
+      action={updateEmployeeById}
+      className="flex flex-col gap-2 p-8 rounded-md m-2 bg-orange-600 h-fit"
+    >
       <Input
         label="Nombre"
         name="employeeName"
@@ -37,6 +58,11 @@ export default function FormUpdateEmployee(
         label="Foto"
         type="file"
         name="employeePhoto"
+      />
+
+      <SelectLocations
+        stores={locations}
+        defaultStore={employee.location?.locationId}
       />
 
       <Button type="submit" color="primary">
