@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { API_URL } from "@/constants";
 import { AuthHeaders } from "@/helpers/AuthHeaders";
 
@@ -32,4 +33,7 @@ export default async function updateUser(
   if (!response.ok) {
     throw new Error(result.message || "Error al actualizar el usuario");
   }
+
+  revalidateTag("dashboard:employees");
+  revalidateTag("dashboard:managers");
 }
