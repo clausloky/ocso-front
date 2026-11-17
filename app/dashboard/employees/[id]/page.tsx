@@ -4,7 +4,7 @@ import { Employee } from "@/entities";
 import { Image } from "@nextui-org/react";
 import FormUpdateEmployee from "./_components/FormUpdateEmployee";
 import { API_URL } from "@/constants";
-import EmployeeDataCard from "./_components/EmployeeDataCard";
+import EmployeeDataCard from "../_components/EmployeeDataCard";
 
 export default async function EmployeePage({
   params,

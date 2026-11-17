@@ -1,8 +1,9 @@
 import { Employee } from "@/entities";
 import Link from "next/link";
-import DeleteEmployee from "./DeleteEmployee";
-import CreateUser from "./CreateUser";
+import CreateUser from "../[id]/_components/CreateUser";
+import DeleteEmployee from "../[id]/_components/DeleteEmployee";
 import FormCreateUserEmployee from "./FormCreateUser";
+import FormUpdateUser from "./FormUpdateUser";
 import { LuUser } from "react-icons/lu";
 
 export default function EmployeeDataCard({
@@ -40,8 +41,10 @@ export default function EmployeeDataCard({
         icon={<LuUser size={20} />}
         photo={employee?.employeePhotoUrl}
       >
-        {!employee.user && (
+        {!employee.user ? (
           <FormCreateUserEmployee employee={employee} />
+        ) : (
+          <FormUpdateUser user={employee.user} />
         )}
       </CreateUser>
     </div>
